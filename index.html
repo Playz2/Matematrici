@@ -3,430 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carduri Flash Matematică</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <title>Matematrici</title>
+    <link rel="stylesheet" href="style.css">
+<script>
+        document.getElementById('mathjax-loading-bar').style.width = '20%';
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #667eea 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            pointer-events: none;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 500px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 0 32px 64px rgba(0,0,0,0.2), 0 8px 32px rgba(0,0,0,0.1);
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 32px 24px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(180deg); }
-        }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 16px;
-            position: relative;
-            z-index: 1;
-            font-weight: 400;
-        }
-
-        .content {
-            padding: 32px 24px;
-            min-height: 450px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        /* Topic Selection Screen */
-        .topic-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        .topic-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 16px;
-            padding: 24px;
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .topic-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .topic-button:hover::before {
-            left: 100%;
-        }
-
-        .topic-button:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 16px 48px rgba(102, 126, 234, 0.4);
-        }
-
-        .topic-button:active {
-            transform: translateY(-2px) scale(1.01);
-        }
-
-        .topic-button:nth-child(1) {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);
-        }
-
-        .topic-button:nth-child(1):hover {
-            box-shadow: 0 16px 48px rgba(255, 107, 107, 0.4);
-        }
-
-        .topic-button:nth-child(2) {
-            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-            box-shadow: 0 8px 32px rgba(78, 205, 196, 0.3);
-        }
-
-        .topic-button:nth-child(2):hover {
-            box-shadow: 0 16px 48px rgba(78, 205, 196, 0.4);
-        }
-
-        .topic-button:nth-child(3) {
-            background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
-            box-shadow: 0 8px 32px rgba(254, 202, 87, 0.3);
-        }
-
-        .topic-button:nth-child(3):hover {
-            box-shadow: 0 16px 48px rgba(254, 202, 87, 0.4);
-        }
-
-        .topic-button:nth-child(4) {
-            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
-            box-shadow: 0 8px 32px rgba(162, 155, 254, 0.3);
-        }
-
-        .topic-button:nth-child(4):hover {
-            box-shadow: 0 16px 48px rgba(162, 155, 254, 0.4);
-        }
-
-        .topic-button:nth-child(5) {
-            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
-            box-shadow: 0 8px 32px rgba(253, 121, 168, 0.3);
-        }
-
-        .topic-button:nth-child(5):hover {
-            box-shadow: 0 16px 48px rgba(253, 121, 168, 0.4);
-        }
-
-        .topic-icon {
-            font-size: 24px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-
-        /* Flashcard Screen */
-        .flashcard-container {
-            text-align: center;
-        }
-
-        .card-counter {
-            color: #6b7280;
-            margin-bottom: 24px;
-            font-size: 16px;
-            font-weight: 500;
-            background: #f8fafc;
-            padding: 12px 24px;
-            border-radius: 24px;
-            display: inline-block;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-        }
-
-        .flashcard {
-            background: #ffffff;
-            border-radius: 20px;
-            min-height: 320px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 32px;
-            padding: 32px;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.05);
-            position: relative;
-            overflow: hidden;
-            border: 2px solid transparent;
-        }
-
-        .flashcard::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.02) 50%, transparent 100%);
-            pointer-events: none;
-        }
-
-        .flashcard:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 64px rgba(0,0,0,0.15), 0 8px 24px rgba(0,0,0,0.1);
-            border-color: rgba(102, 126, 234, 0.2);
-        }
-
-        .flashcard.flipped {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: rgba(255,255,255,0.3);
-        }
-
-        .flashcard.flipped::before {
-            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
-        }
-
-        .card-content {
-            font-size: 22px;
-            line-height: 1.6;
-            text-align: center;
-            font-weight: 600;
-            color: #1f2937;
-            max-width: 100%;
-            word-wrap: break-word;
-        }
-
-        .flashcard.flipped .card-content {
-            color: white;
-            font-weight: 500;
-            font-size: 20px;
-        }
-
-        .tap-hint {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 14px;
-            opacity: 0.6;
-            color: #6b7280;
-            font-weight: 500;
-            background: rgba(255,255,255,0.8);
-            padding: 8px 16px;
-            border-radius: 16px;
-            backdrop-filter: blur(8px);
-        }
-
-        .flashcard.flipped .tap-hint {
-            color: rgba(255,255,255,0.9);
-            background: rgba(255,255,255,0.15);
-        }
-
-        .controls {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-bottom: 16px;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 16px;
-            padding: 16px 28px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            box-shadow: 0 8px 24px rgba(107, 114, 128, 0.3);
-        }
-
-        .btn-secondary:hover {
-            box-shadow: 0 12px 32px rgba(107, 114, 128, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        /* Mobile optimizations */
-        @media (max-width: 480px) {
-            body {
-                padding: 16px;
-            }
-            
-            .content {
-                padding: 24px 20px;
-            }
-            
-            .flashcard {
-                min-height: 280px;
-                padding: 24px;
-            }
-            
-            .card-content {
-                font-size: 20px;
-            }
-            
-            .flashcard.flipped .card-content {
-                font-size: 18px;
-            }
-            
-            .controls {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            .btn {
-                padding: 16px 24px;
-                justify-content: center;
-            }
-
-            .topic-button {
-                padding: 20px;
-                font-size: 17px;
-            }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .header p {
-                font-size: 15px;
-            }
-        }
-
-        /* Success animation */
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-8px);
-            }
-            60% {
-                transform: translateY(-4px);
-            }
-        }
-
-        .bounce {
-            animation: bounce 0.6s ease-in-out;
-        }
-    </style>
-    <!-- Add MathJax -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>
+        // MathJax configuration
         window.MathJax = {
             tex: {
                 inlineMath: [['$', '$']],
@@ -434,18 +16,49 @@
             },
             svg: {
                 fontCache: 'global'
+            },
+            startup: {
+                pageReady: () => {
+                    // Update progress to 60% when MathJax starts processing
+                    document.getElementById('mathjax-loading-bar').style.width = '60%';
+                    
+                    return MathJax.startup.defaultPageReady().then(() => {
+                        // Complete the progress bar
+                        document.getElementById('mathjax-loading-bar').style.width = '100%';
+                        
+                        // Wait a moment, then hide loading and show content
+                        setTimeout(() => {
+                            document.body.classList.add('content-loaded');
+                        }, 500);
+                    });
+                }
             }
         };
-    </script>
+
+        // Update progress as MathJax loads
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('mathjax-loading-bar').style.width = '40%';
+        });
+
+</script>
 </head>
 <body>
+<body>
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <div class="progress-container">
+            <div id="mathjax-loading-bar"></div>
+        </div>
+        <div class="loading-text">Loading MathJax...</div>
+    </div>
+
+    <div class="main-content" style="display: none;">
     <div class="app-container">
         <div class="header">
             <h1>📚 Carduri Flash Matematică</h1>
             <p>Învață conceptele matematice pas cu pas</p>
         </div>
 
-        <!-- Topic Selection Screen -->
         <div id="topic-screen" class="content">
             <div class="topic-grid">
                 <button class="topic-button" onclick="selectTopic('derivatives')">
@@ -499,7 +112,6 @@
             </div>
         </div>
 
-        <!-- Flashcard Screen -->
         <div id="flashcard-screen" class="content hidden">
             <div class="flashcard-container">
                 <div class="card-counter">
@@ -528,7 +140,9 @@
             </div>
         </div>
     </div>
-
+</div>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         // Replace the old flashcards object with the new database
         const database = {
