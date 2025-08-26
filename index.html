@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carduri Flash Matematică</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #667eea 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            pointer-events: none;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 32px 64px rgba(0,0,0,0.2), 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 32px 24px;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Topic Selection Screen */
+        .topic-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .topic-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topic-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .topic-button:hover::before {
+            left: 100%;
+        }
+
+        .topic-button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 16px 48px rgba(102, 126, 234, 0.4);
+        }
+
+        .topic-button:active {
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .topic-button:nth-child(1) {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);
+        }
+
+        .topic-button:nth-child(1):hover {
+            box-shadow: 0 16px 48px rgba(255, 107, 107, 0.4);
+        }
+
+        .topic-button:nth-child(2) {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            box-shadow: 0 8px 32px rgba(78, 205, 196, 0.3);
+        }
+
+        .topic-button:nth-child(2):hover {
+            box-shadow: 0 16px 48px rgba(78, 205, 196, 0.4);
+        }
+
+        .topic-button:nth-child(3) {
+            background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+            box-shadow: 0 8px 32px rgba(254, 202, 87, 0.3);
+        }
+
+        .topic-button:nth-child(3):hover {
+            box-shadow: 0 16px 48px rgba(254, 202, 87, 0.4);
+        }
+
+        .topic-button:nth-child(4) {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            box-shadow: 0 8px 32px rgba(162, 155, 254, 0.3);
+        }
+
+        .topic-button:nth-child(4):hover {
+            box-shadow: 0 16px 48px rgba(162, 155, 254, 0.4);
+        }
+
+        .topic-button:nth-child(5) {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            box-shadow: 0 8px 32px rgba(253, 121, 168, 0.3);
+        }
+
+        .topic-button:nth-child(5):hover {
+            box-shadow: 0 16px 48px rgba(253, 121, 168, 0.4);
+        }
+
+        .topic-icon {
+            font-size: 24px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        /* Flashcard Screen */
+        .flashcard-container {
+            text-align: center;
+        }
+
+        .card-counter {
+            color: #6b7280;
+            margin-bottom: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            background: #f8fafc;
+            padding: 12px 24px;
+            border-radius: 24px;
+            display: inline-block;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+
+        .flashcard {
+            background: #ffffff;
+            border-radius: 20px;
+            min-height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 32px;
+            padding: 32px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .flashcard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.02) 50%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 64px rgba(0,0,0,0.15), 0 8px 24px rgba(0,0,0,0.1);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .flashcard.flipped {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .flashcard.flipped::before {
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .card-content {
+            font-size: 22px;
+            line-height: 1.6;
+            text-align: center;
+            font-weight: 600;
+            color: #1f2937;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .flashcard.flipped .card-content {
+            color: white;
+            font-weight: 500;
+            font-size: 20px;
+        }
+
+        .tap-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            opacity: 0.6;
+            color: #6b7280;
+            font-weight: 500;
+            background: rgba(255,255,255,0.8);
+            padding: 8px 16px;
+            border-radius: 16px;
+            backdrop-filter: blur(8px);
+        }
+
+        .flashcard.flipped .tap-hint {
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .controls {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 16px;
+            padding: 16px 28px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            box-shadow: 0 8px 24px rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 12px 32px rgba(107, 114, 128, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+            
+            .content {
+                padding: 24px 20px;
+            }
+            
+            .flashcard {
+                min-height: 280px;
+                padding: 24px;
+            }
+            
+            .card-content {
+                font-size: 20px;
+            }
+            
+            .flashcard.flipped .card-content {
+                font-size: 18px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .btn {
+                padding: 16px 24px;
+                justify-content: center;
+            }
+
+            .topic-button {
+                padding: 20px;
+                font-size: 17px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header p {
+                font-size: 15px;
+            }
+        }
+
+        /* Success animation */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-8px);
+            }
+            60% {
+                transform: translateY(-4px);
+            }
+        }
+
+        .bounce {
+            animation: bounce 0.6s ease-in-out;
+        }
+    </style>
+    <!-- Add MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>📚 Carduri Flash Matematică</h1>
+            <p>Învață conceptele matematice pas cu pas</p>
+        </div>
+
+        <!-- Topic Selection Screen -->
+        <div id="topic-screen" class="content">
+            <div class="topic-grid">
+                <button class="topic-button" onclick="selectTopic('derivatives')">
+                    <span class="topic-icon">📐</span>
+                    <span>Derivate</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('integrals')">
+                    <span class="topic-icon">∫</span>
+                    <span>Integrale</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('limits')">
+                    <span class="topic-icon">→</span>
+                    <span>Limite</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('trigonometry')">
+                    <span class="topic-icon">📊</span>
+                    <span>Trigonometrie</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('Logaritmi')">
+                    <span class="topic-icon">📊</span>
+                    <span>Logaritmi</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('Matrici')">
+                    <span class="topic-icon">📊</span>
+                    <span>Matrici</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('Determinanti')">
+                    <span class="topic-icon">📊</span>
+                    <span>Determinanti</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('Monotonie')">
+                    <span class="topic-icon">📊</span>
+                    <span>Monotonie</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('Puteri')">
+                    <span class="topic-icon">📊</span>
+                    <span>Puteri</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('Combinatorica')">
+                    <span class="topic-icon">📊</span>
+                    <span>Combinatorica</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('Aranjamente')">
+                    <span class="topic-icon">📊</span>
+                    <span>Aranjamente</span>
+                </button>
+                <button class="topic-button" onclick="selectTopic('mixed')">
+                    <span class="topic-icon">🎲</span>
+                    <span>Test Mixt</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Flashcard Screen -->
+        <div id="flashcard-screen" class="content hidden">
+            <div class="flashcard-container">
+                <div class="card-counter">
+                    <span id="current-card">1</span> din <span id="total-cards">0</span>
+                </div>
+                
+                <div class="flashcard" id="flashcard" onclick="flipCard()">
+                    <div class="card-content" id="card-content"></div>
+                    <div class="tap-hint">Apasă pentru a întoarce</div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-secondary" id="prev-btn" onclick="previousCard()">
+                        ← Anterior
+                    </button>
+                    <button class="btn" id="next-btn" onclick="nextCard()">
+                        Următorul →
+                    </button>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-secondary" onclick="backToTopics()">
+                        ← Înapoi la Subiecte
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Replace the old flashcards object with the new database
+        const database = {
+            "topics": [
+                { "id": 1, "nume": "Derivate" },
+                { "id": 2, "nume": "Integrale" },
+                { "id": 3, "nume": "Limite" },
+                { "id": 4, "nume": "Trigonometrie" },
+                { "id": 5, "nume": "Logaritmi" },
+                { "id": 6, "nume": "Matrici" },
+                { "id": 7, "nume": "Determinanti" },
+                { "id": 8, "nume": "Monotonie" },
+                { "id": 9, "nume": "Puteri" },
+                { "id": 10, "nume": "Combinatorica" },
+                { "id": 11, "nume": "Aranjamente" }
+            ],
+            "flashcards": [
+                { "id": 101, "topic_id": 1, "front_text": "Care este derivata functiei $x^n$?", "back_text": "$$n x^{n-1}$$", "type": "formula" },
+                { "id": 102, "topic_id": 1, "front_text": "Derivata lui $\\sqrt{x}$?", "back_text": "$$\\frac{1}{2\\sqrt{x}}$$", "type": "formula" },
+                { "id": 103, "topic_id": 1, "front_text": "Derivata lui $\\frac{1}{x}$?", "back_text": "$$-\\frac{1}{x^2}$$", "type": "formula" },
+                { "id": 104, "topic_id": 1, "front_text": "Derivata functiei $\\ln|x|$?", "back_text": "$$\\frac{1}{x}$$", "type": "formula" },
+                { "id": 105, "topic_id": 1, "front_text": "Formula derivarii functiei compuse?", "back_text": "$$(f\\circ g)'(x) = f'(g(x)) g'(x)$$", "type": "teorema" },
+                { "id": 106, "topic_id": 1, "front_text": "Derivata functiei $\\sec(x)$?", "back_text": "$$\\sec(x)\\tan(x)$$", "type": "formula" },
+                { "id": 107, "topic_id": 1, "front_text": "Derivata functiei $\\csc(x)$?", "back_text": "$$-\\csc(x)\\cot(x)$$", "type": "formula" },
+                { "id": 108, "topic_id": 1, "front_text": "Derivata functiei $\\sin(x)$?", "back_text": "$$\\cos(x)$$", "type": "formula" },
+                { "id": 109, "topic_id": 1, "front_text": "Derivata functiei $\\cos(x)$?", "back_text": "$$-\\sin(x)$$", "type": "formula" },
+                { "id": 110, "topic_id": 1, "front_text": "Derivata functiei $e^x$?", "back_text": "$$e^x$$", "type": "formula" },
+                { "id": 111, "topic_id": 1, "front_text": "Derivata functiei $a^x$?", "back_text": "$$a^x \\ln(a)$$", "type": "formula" },
+                { "id": 112, "topic_id": 1, "front_text": "Derivata functiei $\\tan(x)$?", "back_text": "$$\\sec^2(x)$$", "type": "formula" },
+                { "id": 113, "topic_id": 1, "front_text": "Derivata functiei $\\cot(x)$?", "back_text": "$$-\\csc^2(x)$$", "type": "formula" },
+                { "id": 114, "topic_id": 1, "front_text": "Regula produsului pentru derivare?", "back_text": "$$(f\\cdot g)' = f' g + f g'$$", "type": "teorema" },
+                { "id": 115, "topic_id": 1, "front_text": "Regula catului pentru derivare?", "back_text": "$$(\\frac{f}{g})' = \\frac{f'g - fg'}{g^2}$$", "type": "teorema" },
+                { "id": 116, "topic_id": 1, "front_text": "Derivata functiei $\\ln(f(x))$?", "back_text": "$$\\frac{f'(x)}{f(x)}$$", "type": "formula" },
+                { "id": 117, "topic_id": 1, "front_text": "Derivata functiei $\\arcsin(x)$?", "back_text": "$$\\frac{1}{\\sqrt{1-x^2}}$$", "type": "formula" },
+                { "id": 118, "topic_id": 1, "front_text": "Derivata functiei $\\arccos(x)$?", "back_text": "$$-\\frac{1}{\\sqrt{1-x^2}}$$", "type": "formula" },
+                { "id": 119, "topic_id": 1, "front_text": "Derivata functiei $\\arctan(x)$?", "back_text": "$$\\frac{1}{1+x^2}$$", "type": "formula" },
+                { "id": 120, "topic_id": 1, "front_text": "Derivata functiei $\\arccot(x)$?", "back_text": "$$-\\frac{1}{1+x^2}$$", "type": "formula" },
+
+                { "id": 201, "topic_id": 2, "front_text": "Integrala lui $\\sqrt{x}$?", "back_text": "$$\\frac{2}{3}x^{3/2}+C$$", "type": "formula" },
+                { "id": 202, "topic_id": 2, "front_text": "Integrala lui $\\frac{1}{1+x^2}$?", "back_text": "$$\\arctan(x)+C$$", "type": "formula" },
+                { "id": 203, "topic_id": 2, "front_text": "Integrala lui $\\sec^2(x)$?", "back_text": "$$\\tan(x)+C$$", "type": "formula" },
+                { "id": 204, "topic_id": 2, "front_text": "Integrala lui $\\csc^2(x)$?", "back_text": "$$-\\cot(x)+C$$", "type": "formula" },
+                { "id": 205, "topic_id": 2, "front_text": "Integrala lui $e^{ax}$?", "back_text": "$$\\frac{1}{a}e^{ax}+C$$", "type": "formula" },
+                { "id": 206, "topic_id": 2, "front_text": "Integrala lui $x^n$ cu $n\\neq -1$?", "back_text": "$$\\frac{x^{n+1}}{n+1}+C$$", "type": "formula" },
+                { "id": 207, "topic_id": 2, "front_text": "Integrala lui $\\frac{1}{x}$?", "back_text": "$$\\ln|x|+C$$", "type": "formula" },
+                { "id": 208, "topic_id": 2, "front_text": "Integrala lui $\\sin(x)$?", "back_text": "$$-\\cos(x)+C$$", "type": "formula" },
+                { "id": 209, "topic_id": 2, "front_text": "Integrala lui $\\cos(x)$?", "back_text": "$$\\sin(x)+C$$", "type": "formula" },
+                { "id": 210, "topic_id": 2, "front_text": "Integrala lui $\\tan(x)$?", "back_text": "$$-\\ln|\\cos(x)|+C$$", "type": "formula" },
+                { "id": 211, "topic_id": 2, "front_text": "Integrala lui $\\cot(x)$?", "back_text": "$$\\ln|\\sin(x)|+C$$", "type": "formula" },
+                { "id": 212, "topic_id": 2, "front_text": "Integrala lui $\\sec(x)\\tan(x)$?", "back_text": "$$\\sec(x)+C$$", "type": "formula" },
+                { "id": 213, "topic_id": 2, "front_text": "Integrala lui $\\csc(x)\\cot(x)$?", "back_text": "$$-\\csc(x)+C$$", "type": "formula" },
+                { "id": 214, "topic_id": 2, "front_text": "Integrala functiei exponentiale $a^x$?", "back_text": "$$\\frac{a^x}{\\ln a}+C$$", "type": "formula" },
+                { "id": 215, "topic_id": 2, "front_text": "Regula integrarii unui produs $u'v$ sau $uv'$?", "back_text": "$$\\int u'v dx = uv - \\int uv' dx$$", "type": "teorema" },
+                { "id": 216, "topic_id": 2, "front_text": "Integrala functiei $1/\\sqrt{1-x^2}$?", "back_text": "$$\\arcsin(x)+C$$", "type": "formula" },
+                { "id": 217, "topic_id": 2, "front_text": "Integrala functiei $1/(1-x^2)$?", "back_text": "$$\\frac{1}{2}\\ln|\\frac{1+x}{1-x}| + C$$", "type": "formula" },
+
+                { "id": 301, "topic_id": 3, "front_text": "Limita lui $\\frac{\\sin x}{x}$ cand $x \\to 0$?", "back_text": "1", "type": "teorema" },
+                { "id": 302, "topic_id": 3, "front_text": "Limita lui $\\frac{1-\\cos x}{x^2}$ cand $x \\to 0$?", "back_text": "$\\frac{1}{2}$", "type": "formula" },
+                { "id": 303, "topic_id": 3, "front_text": "Limita lui $(1+\\frac{1}{n})^n$ cand $n\\to\\infty$?", "back_text": "$e$", "type": "formula" },
+                { "id": 304, "topic_id": 3, "front_text": "Limita lui $\\ln(x)$ cand $x\\to 0^+$?", "back_text": "$-\\infty$", "type": "formula" },
+                { "id": 305, "topic_id": 3, "front_text": "Limita lui $\\frac{e^x-1}{x}$ cand $x\\to 0$?", "back_text": "1", "type": "formula" },
+
+                { "id": 401, "topic_id": 4, "front_text": "Formula adunării pentru $\\tan(a+b)$?", "back_text": "$$\\frac{\\tan a + \\tan b}{1-\\tan a \\tan b}$$", "type": "formula" },
+                { "id": 402, "topic_id": 4, "front_text": "Formula diferenței pentru $\\cos(a-b)$?", "back_text": "$$\\cos a \\cos b + \\sin a \\sin b$$", "type": "formula" },
+                { "id": 403, "topic_id": 4, "front_text": "Formula pentru $\\sin^2(x)$?", "back_text": "$$\\frac{1-\\cos(2x)}{2}$$", "type": "formula" },
+                { "id": 404, "topic_id": 4, "front_text": "Formula pentru $\\cos^2(x)$?", "back_text": "$$\\frac{1+\\cos(2x)}{2}$$", "type": "formula" },
+                { "id": 405, "topic_id": 4, "front_text": "Formula pentru $\\tan(2x)$?", "back_text": "$$\\frac{2\\tan x}{1-\\tan^2x}$$", "type": "formula" },
+                { "id": 406, "topic_id": 4, "front_text": "Identitatea $1+\\tan^2x$?", "back_text": "$$\\sec^2x$$", "type": "formula" },
+                { "id": 407, "topic_id": 4, "front_text": "Identitatea $1+\\cot^2x$?", "back_text": "$$\\csc^2x$$", "type": "formula" },
+                { "id": 408, "topic_id": 4, "front_text": "Formula pentru $\\sin(a-b)$?", "back_text": "$$\\sin a \\cos b - \\cos a \\sin b$$", "type": "formula" },
+
+                { "id": 501, "topic_id": 5, "front_text": "Care este valoarea lui $\\log_e(e)$?", "back_text": "1", "type": "formula" },
+                { "id": 502, "topic_id": 5, "front_text": "Care este valoarea lui $\\log_e(1)$?", "back_text": "0", "type": "formula" },
+                { "id": 503, "topic_id": 5, "front_text": "Logaritmul unui produs $xy$?", "back_text": "$$\\log_a(xy)=\\log_a x+\\log_a y$$", "type": "formula" },
+                { "id": 504, "topic_id": 5, "front_text": "Logaritmul unui cat $x/y$?", "back_text": "$$\\log_a(x/y)=\\log_a x-\\log_a y$$", "type": "formula" },
+                { "id": 505, "topic_id": 5, "front_text": "Logaritmul unei puteri $x^n$?", "back_text": "$$n \\cdot \\log_a x$$", "type": "formula" },
+                { "id": 506, "topic_id": 5, "front_text": "Logaritm baza $10$ se notează?", "back_text": "$\\log(x)$", "type": "definitie" },
+                { "id": 507, "topic_id": 5, "front_text": "Logaritm baza $e$ se notează?", "back_text": "$\\ln(x)$", "type": "definitie" },
+                { "id": 508, "topic_id": 5, "front_text": "Formula schimbării bazei logaritmului?", "back_text": "$$\\log_a b = \\frac{\\log_c b}{\\log_c a}$$", "type": "formula" },
+                { "id": 509, "topic_id": 5, "front_text": "Logaritmul unui radical $\\sqrt[n]{x}$?", "back_text": "$$\\log_a(\\sqrt[n]{x}) = \\frac{1}{n}\\log_a x$$", "type": "formula" },
+                { "id": 510, "topic_id": 5, "front_text": "Logaritmul lui $a^b$ cu baza $a$?", "back_text": "$$\\log_a(a^b)=b$$", "type": "formula" },
+                { "id": 511, "topic_id": 5, "front_text": "Logaritmul lui $1$ în orice bază $a>0$, $a\\neq 1$?", "back_text": "0", "type": "formula" },
+                { "id": 512, "topic_id": 5, "front_text": "Logaritmul lui $a$ în baza $a$ ($a>0$, $a\\neq 1$)?", "back_text": "1", "type": "formula" },
+                { "id": 513, "topic_id": 5, "front_text": "Domeniul de definiție al funcției logaritmice $f(x)=\\log_a x$?", "back_text": "$(0, +\\infty)$", "type": "definitie" },
+                { "id": 514, "topic_id": 5, "front_text": "Condiții pentru bază $a$ într-un logaritm $\\log_a x$?", "back_text": "$a>0,\\ a\\neq 1$", "type": "definitie" },
+                { "id": 515, "topic_id": 5, "front_text": "Condiții pentru argument $x$ într-un logaritm $\\log_a x$?", "back_text": "$x>0$", "type": "definitie" },
+                { "id": 516, "topic_id": 5, "front_text": "Monotonia funcției logaritmice $f(x)=\\log_a x$ pentru $a>1$?", "back_text": "Funcția este strict crescătoare.", "type": "definitie" },
+                { "id": 517, "topic_id": 5, "front_text": "Monotonia funcției logaritmice $f(x)=\\log_a x$ pentru $0<a<1$?", "back_text": "Funcția este strict descrescătoare.", "type": "definitie" },
+                { "id": 518, "topic_id": 5, "front_text": "Valoarea expresiei $a^{\\log_a x}$?", "back_text": "$x$", "type": "formula" },
+                { "id": 519, "topic_id": 5, "front_text": "Valoarea expresiei $\\log_a(a^x)$?", "back_text": "$x$", "type": "formula" },
+
+                { "id": 601, "topic_id": 6, "front_text": "Ce este o matrice transpusă?", "back_text": "Matricea obținută prin interschimbarea liniilor cu coloanele.", "type": "definitie" },
+                { "id": 602, "topic_id": 6, "front_text": "Care este inversa unei matrici $A$?", "back_text": "Matricea $A^{-1}$ cu proprietatea $AA^{-1}=I$.", "type": "definitie" },
+                { "id": 603, "topic_id": 6, "front_text": "Ce este o matrice ortogonală?", "back_text": "O matrice pătratică $A$ pentru care $A^TA=I$.", "type": "definitie" },
+                { "id": 604, "topic_id": 6, "front_text": "Ce proprietate are matricea unitate $I$?", "back_text": "Pentru orice $A$, $AI=IA=A$.", "type": "teorema" },
+                { "id": 605, "topic_id": 6, "front_text": "Ce este matricea opusă a lui $A$?", "back_text": "Matricea $-A$, cu elemente $a_{ij}$ negate.", "type": "definitie" },
+
+                { "id": 701, "topic_id": 7, "front_text": "Determinantul matricei unitate $I_n$?", "back_text": "1", "type": "formula" },
+                { "id": 702, "topic_id": 7, "front_text": "Ce se întâmplă cu determinantul daca două linii se interschimbă?", "back_text": "Își schimbă semnul.", "type": "teorema" },
+                { "id": 703, "topic_id": 7, "front_text": "Determinantul unei matrice cu o linie nulă?", "back_text": "Determinantul este 0.", "type": "teorema" },
+                { "id": 704, "topic_id": 7, "front_text": "Ce se întâmplă cu determinantul daca o linie este multiplă a alteia?", "back_text": "Determinantul este 0.", "type": "teorema" },
+                { "id": 705, "topic_id": 7, "front_text": "Determinantul unui produs $AB$?", "back_text": "$$\\det(AB)=\\det(A)\\det(B)$$", "type": "teorema" },
+
+                { "id": 801, "topic_id": 8, "front_text": "Când o funcție este crescătoare?", "back_text": "Dacă $f'(x)>0$ pe un interval.", "type": "definitie" },
+                { "id": 802, "topic_id": 8, "front_text": "Când o funcție este descrescătoare?", "back_text": "Dacă $f'(x)<0$ pe un interval.", "type": "definitie" },
+                { "id": 803, "topic_id": 8, "front_text": "Criteriul de convexitate?", "back_text": "Dacă $f''(x)>0$, funcția e convexă.", "type": "teorema" },
+                { "id": 804, "topic_id": 8, "front_text": "Criteriul de concavitate?", "back_text": "Dacă $f''(x)<0$, funcția e concavă.", "type": "teorema" },
+                { "id": 805, "topic_id": 8, "front_text": "Criteriul derivatelor pentru extrem local?", "back_text": "Dacă $f'(x_0)=0$ și $f''(x_0)>0$, $x_0$ este minim; dacă $f''(x_0)<0$, $x_0$ este maxim.", "type": "teorema" },
+
+                { "id": 901, "topic_id": 9, "front_text": "Formula $(a^m)(a^n)$?", "back_text": "$$a^{m+n}$$", "type": "formula" },
+                { "id": 902, "topic_id": 9, "front_text": "Formula $\\frac{a^m}{a^n}$?", "back_text": "$$a^{m-n}$$", "type": "formula" },
+                { "id": 903, "topic_id": 9, "front_text": "Formula $(a^m)^n$?", "back_text": "$$a^{mn}$$", "type": "formula" },
+                { "id": 904, "topic_id": 9, "front_text": "Formula $(ab)^n$?", "back_text": "$$a^nb^n$$", "type": "formula" },
+                { "id": 905, "topic_id": 9, "front_text": "Formula $(\\frac{a}{b})^n$?", "back_text": "$$\\frac{a^n}{b^n}$$", "type": "formula" },
+
+                { "id": 1001, "topic_id": 10, "front_text": "Definiția combinărilor $C(n,k)$?", "back_text": "Numărul de submulțimi de $k$ elemente alese din $n$, fără ordine.", "type": "definitie" },
+                { "id": 1002, "topic_id": 10, "front_text": "Formula combinărilor?", "back_text": "$$C(n,k)=\\frac{n!}{k!(n-k)!}$$", "type": "formula" },
+                { "id": 1003, "topic_id": 10, "front_text": "Proprietatea simetrică?", "back_text": "$$C(n,k)=C(n,n-k)$$", "type": "teorema" },
+                { "id": 1004, "topic_id": 10, "front_text": "Relația lui Pascal?", "back_text": "$$C(n,k)=C(n-1,k-1)+C(n-1,k)$$", "type": "teorema" },
+                { "id": 1005, "topic_id": 10, "front_text": "Câte submulțimi are o mulțime cu $n$ elemente?", "back_text": "$$2^n$$", "type": "formula" },
+
+                { "id": 1101, "topic_id": 11, "front_text": "Definiția aranjamentelor $A(n,k)$?", "back_text": "Numărul de moduri de a ordona $k$ elemente alese din $n$.", "type": "definitie" },
+                { "id": 1102, "topic_id": 11, "front_text": "Formula aranjamentelor?", "back_text": "$$A(n,k)=\\frac{n!}{(n-k)!}$$", "type": "formula" },
+                { "id": 1103, "topic_id": 11, "front_text": "Formula permutărilor $P_n$?", "back_text": "$n!$", "type": "formula" },
+                { "id": 1104, "topic_id": 11, "front_text": "Câte permutări circulare are o mulțime cu $n$ elemente?", "back_text": "$(n-1)!$", "type": "formula" },
+                { "id": 1105, "topic_id": 11, "front_text": "Formula permutărilor cu repetiție pentru $n$ elemente împărțite în grupuri?", "back_text": "$$\\frac{n!}{n_1!n_2!...n_k!}$$", "type": "formula" }
+            ]
+        };
+
+        // App state
+        let currentTopic = '';
+        let currentCards = [];
+        let currentCardIndex = 0;
+        let isFlipped = false;
+
+        // DOM elements
+        const topicScreen = document.getElementById('topic-screen');
+        const flashcardScreen = document.getElementById('flashcard-screen');
+        const flashcard = document.getElementById('flashcard');
+        const cardContent = document.getElementById('card-content');
+        const currentCardSpan = document.getElementById('current-card');
+        const totalCardsSpan = document.getElementById('total-cards');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function selectTopic(topic) {
+            currentTopic = topic;
+            currentCardIndex = 0;
+            isFlipped = false;
+            
+            // Prepare cards based on topic
+            if (topic === 'mixed') {
+                // Mix cards from all topics
+                currentCards = shuffleArray([...database.flashcards]).slice(0, 15);
+            } else {
+                // Convert old topic names to new topic IDs
+                const topicMap = {
+                    'derivatives': 1,
+                    'integrals': 2,
+                    'limits': 3,
+                    'trigonometry': 4,
+                    'Logaritmi': 5,
+                    'Matrici': 6,
+                    'Determinanti': 7,
+                    'Monotonie': 8,
+                    'Puteri': 9,
+                    'Combinatorica': 10,
+                    'Aranjamente': 11
+                };
+                const topicId = topicMap[topic];
+                currentCards = database.flashcards.filter(card => card.topic_id === topicId);
+            }
+            
+            // Update UI
+            topicScreen.classList.add('hidden');
+            flashcardScreen.classList.remove('hidden');
+            
+            // Set up the first card
+            totalCardsSpan.textContent = currentCards.length;
+            showCard();
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function showCard() {
+            const card = currentCards[currentCardIndex];
+            
+            // Reset card state - show QUESTION first
+            isFlipped = false;
+            flashcard.classList.remove('flipped');
+            
+            // Show front of card (question) with MathJax
+            cardContent.innerHTML = card.front_text;
+            MathJax.typesetPromise([cardContent]).catch((err) => console.log(err));
+            
+            currentCardSpan.textContent = currentCardIndex + 1;
+            
+            prevBtn.disabled = currentCardIndex === 0;
+            nextBtn.disabled = currentCardIndex === currentCards.length - 1;
+            
+            flashcard.classList.add('bounce');
+            setTimeout(() => flashcard.classList.remove('bounce'), 600);
+        }
+
+        function flipCard() {
+            const card = currentCards[currentCardIndex];
+            
+            if (!isFlipped) {
+                // Show ANSWER (back)
+                flashcard.classList.add('flipped');
+                cardContent.innerHTML = card.back_text;
+                MathJax.typesetPromise([cardContent]).catch((err) => console.log(err));
+                isFlipped = true;
+            } else {
+                // Show QUESTION (front)
+                flashcard.classList.remove('flipped');
+                cardContent.innerHTML = card.front_text;
+                MathJax.typesetPromise([cardContent]).catch((err) => console.log(err));
+                isFlipped = false;
+            }
+        }
+
+        function nextCard() {
+            if (currentCardIndex < currentCards.length - 1) {
+                currentCardIndex++;
+                showCard();
+            }
+        }
+
+        function previousCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                showCard();
+            }
+        }
+
+        function backToTopics() {
+            flashcardScreen.classList.add('hidden');
+            topicScreen.classList.remove('hidden');
+            currentTopic = '';
+            currentCards = [];
+            currentCardIndex = 0;
+            isFlipped = false;
+        }
+
+        // Touch/swipe support for mobile
+        let startX = 0;
+        let startY = 0;
+
+        flashcard.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        flashcard.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+
+            // If it's more of a horizontal swipe than vertical
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 80) {
+                e.preventDefault();
+                if (deltaX > 0 && currentCardIndex > 0) {
+                    previousCard();
+                } else if (deltaX < 0 && currentCardIndex < currentCards.length - 1) {
+                    nextCard();
+                }
+            }
+        }, { passive: false });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (flashcardScreen.classList.contains('hidden')) return;
+            
+            switch(e.key) {
+                case ' ':
+                case 'Enter':
+                    e.preventDefault();
+                    flipCard();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    previousCard();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    nextCard();
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    backToTopics();
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
