@@ -5,58 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matematrici</title>
     <link rel="stylesheet" href="style.css">
-<script>
-        document.getElementById('mathjax-loading-bar').style.width = '20%';
-
-        // MathJax configuration
-        window.MathJax = {
+    <script>
+window.MathJax = {
             tex: {
-                inlineMath: [['$', '$']],
-                displayMath: [['$$', '$$']]
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                packages: {'[+]': ['ams', 'newcommand', 'configmacros']},
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
             },
             svg: {
                 fontCache: 'global'
             },
             startup: {
-                pageReady: () => {
-                    // Update progress to 60% when MathJax starts processing
-                    document.getElementById('mathjax-loading-bar').style.width = '60%';
+                ready: function() {
+                    // MathJax is loading
+                    updateLoadingProgress(25, 'Se incarca formulele...');
+                    MathJax.startup.defaultReady();
                     
-                    return MathJax.startup.defaultPageReady().then(() => {
-                        // Complete the progress bar
-                        document.getElementById('mathjax-loading-bar').style.width = '100%';
-                        
-                        // Wait a moment, then hide loading and show content
-                        setTimeout(() => {
-                            document.body.classList.add('content-loaded');
+                    // Set up ready promise
+                    MathJax.startup.promise.then(function() {
+                        updateLoadingProgress(100, 'Aproape Gata!');
+                        setTimeout(function() {
+                            hideLoadingScreen();
                         }, 500);
+                    }).catch(function(err) {
+                        console.error('A fost o erroare la incarcare', err);
+                        updateLoadingProgress(100, 'Loading complete (with errors)');
+                        setTimeout(hideLoadingScreen, 1000);
                     });
                 }
             }
         };
 
-        // Update progress as MathJax loads
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('mathjax-loading-bar').style.width = '40%';
-        });
+        // Loading Progress Functions
+        function updateLoadingProgress(percentage, text) {
+            const progressBar = document.getElementById('mathjax-loading-bar');
+            const loadingText = document.getElementById('loading-text');
+            
+            if (progressBar) {
+                progressBar.style.width = percentage + '%';
+            }
+            if (loadingText && text) {
+                loadingText.textContent = text;
+            }
+        }
 
-</script>
+        function hideLoadingScreen() {
+            const loadingContainer = document.getElementById('loading-container');
+            const mainApp = document.getElementById('main-app');
+            
+            // Fade out loading screen
+            loadingContainer.style.transition = 'opacity 0.5s ease-out';
+            loadingContainer.style.opacity = '0';
+            
+            setTimeout(function() {
+                loadingContainer.classList.add('hidden');
+                mainApp.style.display = 'block';
+                mainApp.style.opacity = '0';
+                mainApp.style.transition = 'opacity 0.5s ease-in';
+                
+                // Fade in main app
+                setTimeout(function() {
+                    mainApp.style.opacity = '1';
+                }, 50);
+            }, 500);
+        }
+
+        // Simulate loading steps
+        let loadingStep = 0;
+        const loadingSteps = [
+            { progress: 15, text: 'Se incarca...' },
+            { progress: 35, text: 'Formulele la limite...' },
+            { progress: 60, text: 'Procesam flashcardurile...' },
+            { progress: 85, text: 'Finalizam procesul...' }
+        ];
+
+        function simulateLoading() {
+            if (loadingStep < loadingSteps.length) {
+                const step = loadingSteps[loadingStep];
+                updateLoadingProgress(step.progress, step.text);
+                loadingStep++;
+                setTimeout(simulateLoading, 300 + Math.random() * 200);
+            }
+        }
+
+        // Start loading simulation immediately
+        simulateLoading();
+    </script>
 </head>
 <body>
-<body>
-    <div class="loading-container">
+    <div id="loading-container" class="loading-container">
         <div class="spinner"></div>
         <div class="progress-container">
             <div id="mathjax-loading-bar"></div>
         </div>
-        <div class="loading-text">Loading MathJax...</div>
+        <div class="loading-text" id="loading-text">Se incarca site-ul...</div>
+        <div class="loading-subtitle">Matematricii te ajuta!</div>
     </div>
 
-    <div class="main-content" style="display: none;">
-    <div class="app-container">
+    <!-- Main App -->
+    <div class="app-container" id="main-app" style="display: none;">
         <div class="header">
-            <h1>📚 Carduri Flash Matematică</h1>
-            <p>Învață conceptele matematice pas cu pas</p>
+            <h1>📚 Mate Flashcards</h1>
+            <p>Devine cel mai bun la mate cu acestea!</p>
         </div>
 
         <div id="topic-screen" class="content">
@@ -199,20 +256,47 @@
                 { "id": 216, "topic_id": 2, "front_text": "Integrala functiei $1/\\sqrt{1-x^2}$?", "back_text": "$$\\arcsin(x)+C$$", "type": "formula" },
                 { "id": 217, "topic_id": 2, "front_text": "Integrala functiei $1/(1-x^2)$?", "back_text": "$$\\frac{1}{2}\\ln|\\frac{1+x}{1-x}| + C$$", "type": "formula" },
 
-                { "id": 301, "topic_id": 3, "front_text": "Limita lui $\\frac{\\sin x}{x}$ cand $x \\to 0$?", "back_text": "1", "type": "teorema" },
-                { "id": 302, "topic_id": 3, "front_text": "Limita lui $\\frac{1-\\cos x}{x^2}$ cand $x \\to 0$?", "back_text": "$\\frac{1}{2}$", "type": "formula" },
-                { "id": 303, "topic_id": 3, "front_text": "Limita lui $(1+\\frac{1}{n})^n$ cand $n\\to\\infty$?", "back_text": "$e$", "type": "formula" },
-                { "id": 304, "topic_id": 3, "front_text": "Limita lui $\\ln(x)$ cand $x\\to 0^+$?", "back_text": "$-\\infty$", "type": "formula" },
-                { "id": 305, "topic_id": 3, "front_text": "Limita lui $\\frac{e^x-1}{x}$ cand $x\\to 0$?", "back_text": "1", "type": "formula" },
+ { "id": 301, "topic_id": 3, "front_text": "Limita lui $\\frac{\\sin x}{x}$ cand $x \\to 0$?", "back_text": "1", "type": "teorema" },
+    { "id": 302, "topic_id": 3, "front_text": "Limita lui $\\frac{1-\\cos x}{x^2}$ cand $x \\to 0$?", "back_text": "$\\frac{1}{2}$", "type": "formula" },
+    { "id": 303, "topic_id": 3, "front_text": "Limita lui $(1+\\frac{1}{n})^n$ cand $n\\to\\infty$?", "back_text": "$e$", "type": "formula" },
+    { "id": 304, "topic_id": 3, "front_text": "Limita lui $\\ln(x)$ cand $x\\to 0^+$?", "back_text": "$-\\infty$", "type": "formula" },
+    { "id": 305, "topic_id": 3, "front_text": "Limita lui $\\frac{e^x-1}{x}$ cand $x\\to 0$?", "back_text": "1", "type": "formula" },
+    { "id": 306, "topic_id": 3, "front_text": "Limita lui $\\frac{\\tan x}{x}$ cand $x \\to 0$?", "back_text": "1", "type": "formula" },
+    { "id": 307, "topic_id": 3, "front_text": "Limita lui $\\frac{\\sin(ax)}{x}$ cand $x \\to 0$?", "back_text": "$a$", "type": "formula" },
+    { "id": 308, "topic_id": 3, "front_text": "Limita lui $\\frac{\\ln(1+x)}{x}$ cand $x \\to 0$?", "back_text": "1", "type": "formula" },
+    { "id": 309, "topic_id": 3, "front_text": "Limita lui $\\frac{a^x-1}{x}$ cand $x\\to 0$?", "back_text": "$\\ln(a)$", "type": "formula" },
+    { "id": 310, "topic_id": 3, "front_text": "Limita lui $\\frac{\\sqrt{1+x}-1}{x}$ cand $x\\to 0$?", "back_text": "$\\frac{1}{2}$", "type": "formula" },
+    { "id": 311, "topic_id": 3, "front_text": "Limita lui $\\frac{\\sin^2(x)}{x^2}$ cand $x\\to 0$?", "back_text": "1", "type": "formula" },
+    { "id": 312, "topic_id": 3, "front_text": "Limita lui $\\cos(x)$ cand $x\\to 0$?", "back_text": "1", "type": "formula" },
+    { "id": 313, "topic_id": 3, "front_text": "Limita lui $\\frac{n}{n+1}$ cand $n\\to\\infty$?", "back_text": "1", "type": "formula" },
+    { "id": 314, "topic_id": 3, "front_text": "Limita lui $\\frac{1}{n}$ cand $n\\to\\infty$?", "back_text": "0", "type": "formula" },
+    { "id": 315, "topic_id": 3, "front_text": "Limita lui $n^{1/n}$ cand $n\\to\\infty$?", "back_text": "1", "type": "formula" },
+    { "id": 316, "topic_id": 3, "front_text": "Limita lui $\\sqrt[n]{a}$ cand $n\\to\\infty$, $a>0$?", "back_text": "1", "type": "formula" },
+    { "id": 317, "topic_id": 3, "front_text": "Limita lui $\\frac{(1+x)^n - 1}{x}$ cand $x\\to 0$?", "back_text": "n", "type": "formula" },
+    { "id": 318, "topic_id": 3, "front_text": "Limita lui $x^{1/x}$ cand $x\\to\\infty$?", "back_text": "1", "type": "formula" },
+    { "id": 319, "topic_id": 3, "front_text": "Limita lui $\\frac{\\ln(n)}{n}$ cand $n\\to\\infty$?", "back_text": "0", "type": "formula" },
+    { "id": 320, "topic_id": 3, "front_text": "Limita lui $n(\\sqrt[n]{a}-1)$ cand $n\\to\\infty$, $a>0$?", "back_text": "$\\ln(a)$", "type": "formula" },
 
                 { "id": 401, "topic_id": 4, "front_text": "Formula adunării pentru $\\tan(a+b)$?", "back_text": "$$\\frac{\\tan a + \\tan b}{1-\\tan a \\tan b}$$", "type": "formula" },
-                { "id": 402, "topic_id": 4, "front_text": "Formula diferenței pentru $\\cos(a-b)$?", "back_text": "$$\\cos a \\cos b + \\sin a \\sin b$$", "type": "formula" },
-                { "id": 403, "topic_id": 4, "front_text": "Formula pentru $\\sin^2(x)$?", "back_text": "$$\\frac{1-\\cos(2x)}{2}$$", "type": "formula" },
-                { "id": 404, "topic_id": 4, "front_text": "Formula pentru $\\cos^2(x)$?", "back_text": "$$\\frac{1+\\cos(2x)}{2}$$", "type": "formula" },
-                { "id": 405, "topic_id": 4, "front_text": "Formula pentru $\\tan(2x)$?", "back_text": "$$\\frac{2\\tan x}{1-\\tan^2x}$$", "type": "formula" },
-                { "id": 406, "topic_id": 4, "front_text": "Identitatea $1+\\tan^2x$?", "back_text": "$$\\sec^2x$$", "type": "formula" },
-                { "id": 407, "topic_id": 4, "front_text": "Identitatea $1+\\cot^2x$?", "back_text": "$$\\csc^2x$$", "type": "formula" },
-                { "id": 408, "topic_id": 4, "front_text": "Formula pentru $\\sin(a-b)$?", "back_text": "$$\\sin a \\cos b - \\cos a \\sin b$$", "type": "formula" },
+    { "id": 402, "topic_id": 4, "front_text": "Formula diferenței pentru $\\cos(a-b)$?", "back_text": "$$\\cos a \\cos b + \\sin a \\sin b$$", "type": "formula" },
+    { "id": 403, "topic_id": 4, "front_text": "Formula pentru $\\sin^2(x)$?", "back_text": "$$\\frac{1-\\cos(2x)}{2}$$", "type": "formula" },
+    { "id": 404, "topic_id": 4, "front_text": "Formula pentru $\\cos^2(x)$?", "back_text": "$$\\frac{1+\\cos(2x)}{2}$$", "type": "formula" },
+    { "id": 405, "topic_id": 4, "front_text": "Formula pentru $\\tan(2x)$?", "back_text": "$$\\frac{2\\tan x}{1-\\tan^2x}$$", "type": "formula" },
+    { "id": 406, "topic_id": 4, "front_text": "Identitatea $1+\\tan^2x$?", "back_text": "$$\\sec^2x$$", "type": "formula" },
+    { "id": 407, "topic_id": 4, "front_text": "Identitatea $1+\\cot^2x$?", "back_text": "$$\\csc^2x$$", "type": "formula" },
+    { "id": 408, "topic_id": 4, "front_text": "Formula pentru $\\sin(a-b)$?", "back_text": "$$\\sin a \\cos b - \\cos a \\sin b$$", "type": "formula" },
+    { "id": 409, "topic_id": 4, "front_text": "Formula pentru $\\cos(a+b)$?", "back_text": "$$\\cos a \\cos b - \\sin a \\sin b$$", "type": "formula" },
+    { "id": 410, "topic_id": 4, "front_text": "Formula pentru $\\sin(a+b)$?", "back_text": "$$\\sin a \\cos b + \\cos a \\sin b$$", "type": "formula" },
+    { "id": 411, "topic_id": 4, "front_text": "Formula pentru $\\cos(2x)$?", "back_text": "$$\\cos^2x - \\sin^2x$$", "type": "formula" },
+    { "id": 412, "topic_id": 4, "front_text": "Formula pentru $\\sin(2x)$?", "back_text": "$$2\\sin x \\cos x$$", "type": "formula" },
+    { "id": 413, "topic_id": 4, "front_text": "Formula pentru $\\cot(a+b)$?", "back_text": "$$\\frac{\\cot a \\cot b - 1}{\\cot a + \\cot b}$$", "type": "formula" },
+    { "id": 414, "topic_id": 4, "front_text": "Formula pentru $\\sin(3x)$?", "back_text": "$$3\\sin x - 4\\sin^3x$$", "type": "formula" },
+    { "id": 415, "topic_id": 4, "front_text": "Formula pentru $\\cos(3x)$?", "back_text": "$$4\\cos^3x - 3\\cos x$$", "type": "formula" },
+    { "id": 416, "topic_id": 4, "front_text": "Formula pentru $\\tan(3x)$?", "back_text": "$$\\frac{3\\tan x - \\tan^3x}{1-3\\tan^2x}$$", "type": "formula" },
+    { "id": 417, "topic_id": 4, "front_text": "Formula pentru $\\sin^2(x)+\\cos^2(x)$?", "back_text": "1", "type": "identitate" },
+    { "id": 418, "topic_id": 4, "front_text": "Formula pentru $\\tan^2(x)+1$?", "back_text": "$$\\sec^2x$$", "type": "identitate" },
+    { "id": 419, "topic_id": 4, "front_text": "Formula pentru $1+\\cot^2(x)$?", "back_text": "$$\\csc^2x$$", "type": "identitate" },
+    { "id": 420, "topic_id": 4, "front_text": "Formula produs–în–sumă: $\\sin a \\cos b$?", "back_text": "$$\\tfrac{1}{2}[\\sin(a+b)+\\sin(a-b)]$$", "type": "formula" },
 
                 { "id": 501, "topic_id": 5, "front_text": "Care este valoarea lui $\\log_e(e)$?", "back_text": "1", "type": "formula" },
                 { "id": 502, "topic_id": 5, "front_text": "Care este valoarea lui $\\log_e(1)$?", "back_text": "0", "type": "formula" },
@@ -235,40 +319,130 @@
                 { "id": 519, "topic_id": 5, "front_text": "Valoarea expresiei $\\log_a(a^x)$?", "back_text": "$x$", "type": "formula" },
 
                 { "id": 601, "topic_id": 6, "front_text": "Ce este o matrice transpusă?", "back_text": "Matricea obținută prin interschimbarea liniilor cu coloanele.", "type": "definitie" },
-                { "id": 602, "topic_id": 6, "front_text": "Care este inversa unei matrici $A$?", "back_text": "Matricea $A^{-1}$ cu proprietatea $AA^{-1}=I$.", "type": "definitie" },
-                { "id": 603, "topic_id": 6, "front_text": "Ce este o matrice ortogonală?", "back_text": "O matrice pătratică $A$ pentru care $A^TA=I$.", "type": "definitie" },
-                { "id": 604, "topic_id": 6, "front_text": "Ce proprietate are matricea unitate $I$?", "back_text": "Pentru orice $A$, $AI=IA=A$.", "type": "teorema" },
-                { "id": 605, "topic_id": 6, "front_text": "Ce este matricea opusă a lui $A$?", "back_text": "Matricea $-A$, cu elemente $a_{ij}$ negate.", "type": "definitie" },
+    { "id": 602, "topic_id": 6, "front_text": "Care este inversa unei matrici $A$?", "back_text": "Matricea $A^{-1}$ cu proprietatea $AA^{-1}=I$.", "type": "definitie" },
+    { "id": 603, "topic_id": 6, "front_text": "Ce este o matrice ortogonală?", "back_text": "O matrice pătratică $A$ pentru care $A^TA=I$.", "type": "definitie" },
+    { "id": 604, "topic_id": 6, "front_text": "Ce proprietate are matricea unitate $I$?", "back_text": "Pentru orice $A$, $AI=IA=A$.", "type": "teorema" },
+    { "id": 605, "topic_id": 6, "front_text": "Ce este matricea opusă a lui $A$?", "back_text": "Matricea $-A$, cu elemente $a_{ij}$ negate.", "type": "definitie" },
+    { "id": 606, "topic_id": 6, "front_text": "Ce este determinantul unei matrici $A$?", "back_text": "Un scalar asociat unei matrici pătratice, notat $\\det(A)$.", "type": "definitie" },
+    { "id": 607, "topic_id": 6, "front_text": "Care este determinantul unei matrici triunghiulare?", "back_text": "Produsul elementelor de pe diagonala principală.", "type": "teorema" },
+    { "id": 608, "topic_id": 6, "front_text": "Când o matrice $A$ este inversabilă?", "back_text": "Dacă și numai dacă $\\det(A) \\neq 0$.", "type": "teorema" },
+    { "id": 609, "topic_id": 6, "front_text": "Ce este o matrice diagonală?", "back_text": "O matrice pătratică cu toate elementele în afara diagonalei egale cu zero.", "type": "definitie" },
+    { "id": 610, "topic_id": 6, "front_text": "Ce este o matrice scalară?", "back_text": "O matrice diagonală cu toate elementele diagonale egale.", "type": "definitie" },
+    { "id": 611, "topic_id": 6, "front_text": "Ce este o matrice identitate $I_n$?", "back_text": "O matrice diagonală cu toate elementele diagonale egale cu 1.", "type": "definitie" },
+    { "id": 612, "topic_id": 6, "front_text": "Ce este o matrice nulă?", "back_text": "Matricea cu toate elementele egale cu 0.", "type": "definitie" },
+    { "id": 613, "topic_id": 6, "front_text": "Ce este o matrice simetrică?", "back_text": "O matrice pătratică $A$ pentru care $A^T=A$.", "type": "definitie" },
+    { "id": 614, "topic_id": 6, "front_text": "Ce este o matrice antisimetrică?", "back_text": "O matrice pătratică $A$ pentru care $A^T=-A$.", "type": "definitie" },
+    { "id": 615, "topic_id": 6, "front_text": "Care este formula pentru transpusa produsului de matrici?", "back_text": "$(AB)^T = B^T A^T$", "type": "teorema" },
+    { "id": 616, "topic_id": 6, "front_text": "Care este formula pentru inversa produsului de matrici?", "back_text": "$(AB)^{-1} = B^{-1} A^{-1}$", "type": "teorema" },
+    { "id": 617, "topic_id": 6, "front_text": "Care este rangul unei matrici?", "back_text": "Dimensiunea maximă a unui subdeterminant nenul al matricii.", "type": "definitie" },
+    { "id": 618, "topic_id": 6, "front_text": "Ce este o matrice ortonormată?", "back_text": "O matrice pătratică ale cărei coloane sunt vectori ortonormați.", "type": "definitie" },
+    { "id": 619, "topic_id": 6, "front_text": "Proprietatea determinantului unei matrici ortogonale?", "back_text": "$\\det(A)=\\pm 1$.", "type": "teorema" },
+    { "id": 620, "topic_id": 6, "front_text": "Ce este o matrice triunghiulară?", "back_text": "O matrice pătratică în care toate elementele deasupra sau dedesubtul diagonalei sunt zero.", "type": "definitie" },
 
                 { "id": 701, "topic_id": 7, "front_text": "Determinantul matricei unitate $I_n$?", "back_text": "1", "type": "formula" },
-                { "id": 702, "topic_id": 7, "front_text": "Ce se întâmplă cu determinantul daca două linii se interschimbă?", "back_text": "Își schimbă semnul.", "type": "teorema" },
-                { "id": 703, "topic_id": 7, "front_text": "Determinantul unei matrice cu o linie nulă?", "back_text": "Determinantul este 0.", "type": "teorema" },
-                { "id": 704, "topic_id": 7, "front_text": "Ce se întâmplă cu determinantul daca o linie este multiplă a alteia?", "back_text": "Determinantul este 0.", "type": "teorema" },
-                { "id": 705, "topic_id": 7, "front_text": "Determinantul unui produs $AB$?", "back_text": "$$\\det(AB)=\\det(A)\\det(B)$$", "type": "teorema" },
+    { "id": 702, "topic_id": 7, "front_text": "Ce se întâmplă cu determinantul daca două linii se interschimbă?", "back_text": "Își schimbă semnul.", "type": "teorema" },
+    { "id": 703, "topic_id": 7, "front_text": "Determinantul unei matrice cu o linie nulă?", "back_text": "Determinantul este 0.", "type": "teorema" },
+    { "id": 704, "topic_id": 7, "front_text": "Ce se întâmplă cu determinantul daca o linie este multiplă a alteia?", "back_text": "Determinantul este 0.", "type": "teorema" },
+    { "id": 705, "topic_id": 7, "front_text": "Determinantul unui produs $AB$?", "back_text": "$$\\det(AB)=\\det(A)\\det(B)$$", "type": "teorema" },
+    { "id": 706, "topic_id": 7, "front_text": "Determinantul transpusei $A^T$?", "back_text": "$$\\det(A^T)=\\det(A)$$", "type": "teorema" },
+    { "id": 707, "topic_id": 7, "front_text": "Determinantul inversului $A^{-1}$?", "back_text": "$$\\det(A^{-1})=\\frac{1}{\\det(A)}$$", "type": "teorema" },
+    { "id": 708, "topic_id": 7, "front_text": "Cum se comportă determinantul la multiplicarea unei linii cu un scalar $k$?", "back_text": "Determinantul se înmulțește cu $k$.", "type": "teorema" },
+    { "id": 709, "topic_id": 7, "front_text": "Determinantul unei matrici triunghiulare?", "back_text": "Produsul elementelor de pe diagonala principală.", "type": "formula" },
+    { "id": 710, "topic_id": 7, "front_text": "Determinantul unei matrici diagonale?", "back_text": "Produsul elementelor de pe diagonală.", "type": "formula" },
+    { "id": 711, "topic_id": 7, "front_text": "Ce se întâmplă dacă adunăm un multiplu al unei linii la alta?", "back_text": "Determinantul nu se schimbă.", "type": "teorema" },
+    { "id": 712, "topic_id": 7, "front_text": "Determinantul unei matrici cu două linii identice?", "back_text": "Determinantul este 0.", "type": "teorema" },
+    { "id": 713, "topic_id": 7, "front_text": "Dezvoltarea determinantului după o linie?", "back_text": "Se obține ca sumă de elemente înmulțite cu cofactorii lor.", "type": "formula" },
+    { "id": 714, "topic_id": 7, "front_text": "Dezvoltarea determinantului după o coloană?", "back_text": "Analog dezvoltării după o linie.", "type": "formula" },
+    { "id": 715, "topic_id": 7, "front_text": "Ce se întâmplă cu determinantul unei matrici pătratice singulară?", "back_text": "$$\\det(A)=0$$", "type": "teorema" },
+    { "id": 716, "topic_id": 7, "front_text": "Ce se întâmplă cu determinantul unei matrici ortogonale?", "back_text": "$$\\det(A)=\\pm 1$$", "type": "teorema" },
+    { "id": 717, "topic_id": 7, "front_text": "Cum se calculează determinantul unei matrici $2\\times2$?", "back_text": "$$\\det\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}=ad-bc$$", "type": "formula" },
+    { "id": 718, "topic_id": 7, "front_text": "Cum se calculează determinantul unei matrici $3\\times3$?", "back_text": "Regula lui Sarrus: $a(ei−fh)−b(di−fg)+c(dh−eg)$.", "type": "formula" },
+    { "id": 719, "topic_id": 7, "front_text": "Determinantul unei matrici nule?", "back_text": "0", "type": "formula" },
+    { "id": 720, "topic_id": 7, "front_text": "Ce legătură există între determinant și volum?", "back_text": "Valoarea absolută a determinantului reprezintă volumul paralelipipedului definit de vectorii coloane.", "type": "teorema" },
 
                 { "id": 801, "topic_id": 8, "front_text": "Când o funcție este crescătoare?", "back_text": "Dacă $f'(x)>0$ pe un interval.", "type": "definitie" },
-                { "id": 802, "topic_id": 8, "front_text": "Când o funcție este descrescătoare?", "back_text": "Dacă $f'(x)<0$ pe un interval.", "type": "definitie" },
-                { "id": 803, "topic_id": 8, "front_text": "Criteriul de convexitate?", "back_text": "Dacă $f''(x)>0$, funcția e convexă.", "type": "teorema" },
-                { "id": 804, "topic_id": 8, "front_text": "Criteriul de concavitate?", "back_text": "Dacă $f''(x)<0$, funcția e concavă.", "type": "teorema" },
-                { "id": 805, "topic_id": 8, "front_text": "Criteriul derivatelor pentru extrem local?", "back_text": "Dacă $f'(x_0)=0$ și $f''(x_0)>0$, $x_0$ este minim; dacă $f''(x_0)<0$, $x_0$ este maxim.", "type": "teorema" },
+    { "id": 802, "topic_id": 8, "front_text": "Când o funcție este descrescătoare?", "back_text": "Dacă $f'(x)<0$ pe un interval.", "type": "definitie" },
+    { "id": 803, "topic_id": 8, "front_text": "Criteriul de convexitate?", "back_text": "Dacă $f''(x)>0$, funcția e convexă.", "type": "teorema" },
+    { "id": 804, "topic_id": 8, "front_text": "Criteriul de concavitate?", "back_text": "Dacă $f''(x)<0$, funcția e concavă.", "type": "teorema" },
+    { "id": 805, "topic_id": 8, "front_text": "Criteriul derivatelor pentru extrem local?", "back_text": "Dacă $f'(x_0)=0$ și $f''(x_0)>0$, $x_0$ este minim; dacă $f''(x_0)<0$, $x_0$ este maxim.", "type": "teorema" },
+    { "id": 806, "topic_id": 8, "front_text": "Ce este un punct de inflexiune?", "back_text": "Un punct unde $f''(x_0)=0$ și funcția își schimbă convexitatea.", "type": "definitie" },
+    { "id": 807, "topic_id": 8, "front_text": "Criteriul testului derivatelor de ordin superior?", "back_text": "Dacă $f'(x_0)=f''(x_0)=\\dots=f^{(n-1)}(x_0)=0$ și $f^{(n)}(x_0)\\neq 0$, atunci $x_0$ este extrem dacă $n$ este par.", "type": "teorema" },
+    { "id": 808, "topic_id": 8, "front_text": "Cum se studiază monotonia unei funcții?", "back_text": "Se determină semnul derivatei $f'(x)$.", "type": "metoda" },
+    { "id": 809, "topic_id": 8, "front_text": "Cum se studiază concavitatea unei funcții?", "back_text": "Se determină semnul derivatei a doua $f''(x)$.", "type": "metoda" },
+    { "id": 810, "topic_id": 8, "front_text": "Ce este un punct critic al funcției?", "back_text": "Un punct unde $f'(x)=0$ sau $f'$ nu există.", "type": "definitie" },
+    { "id": 811, "topic_id": 8, "front_text": "Ce sunt asimptotele orizontale?", "back_text": "Dreptele $y=L$ unde $\\lim_{x\\to\\pm\\infty} f(x)=L$.", "type": "definitie" },
+    { "id": 812, "topic_id": 8, "front_text": "Ce sunt asimptotele verticale?", "back_text": "Dreptele $x=a$ unde $\\lim_{x\\to a} f(x)=\\pm\\infty$.", "type": "definitie" },
+    { "id": 813, "topic_id": 8, "front_text": "Ce sunt asimptotele oblice?", "back_text": "Drepte $y=mx+n$ unde $\\lim_{x\\to\\infty} (f(x)-(mx+n))=0$.", "type": "definitie" },
+    { "id": 814, "topic_id": 8, "front_text": "Teorema lui Fermat pentru extreme locale?", "back_text": "Dacă $f$ are extrem local în $x_0$ și derivata există, atunci $f'(x_0)=0$.", "type": "teorema" },
+    { "id": 815, "topic_id": 8, "front_text": "Teorema lui Rolle?", "back_text": "Dacă $f$ este continuă pe $[a,b]$, derivabilă pe $(a,b)$ și $f(a)=f(b)$, există $c\\in(a,b)$ cu $f'(c)=0$.", "type": "teorema" },
+    { "id": 816, "topic_id": 8, "front_text": "Teorema valorii medii (Lagrange)?", "back_text": "Dacă $f$ este continuă pe $[a,b]$ și derivabilă pe $(a,b)$, există $c\\in(a,b)$ cu $f'(c)=\\frac{f(b)-f(a)}{b-a}$.", "type": "teorema" },
+    { "id": 817, "topic_id": 8, "front_text": "Teorema lui Cauchy (generalizarea lui Lagrange)?", "back_text": "Dacă $f,g$ sunt continue pe $[a,b]$ și derivabile pe $(a,b)$, există $c\\in(a,b)$ cu $\\frac{f'(c)}{g'(c)}=\\frac{f(b)-f(a)}{g(b)-g(a)}$.", "type": "teorema" },
+    { "id": 818, "topic_id": 8, "front_text": "Ce este studiul variației unei funcții?", "back_text": "Analiza monotoniei, concavității, extremelor și asimptotelor.", "type": "definitie" },
+    { "id": 819, "topic_id": 8, "front_text": "Ce condiție trebuie să îndeplinească o funcție pentru a avea extrem global pe un interval închis?", "back_text": "Funcția trebuie să fie continuă pe acel interval (Teorema Weierstrass).", "type": "teorema" },
+    { "id": 820, "topic_id": 8, "front_text": "Cum se determină valorile extreme absolute?", "back_text": "Se compară valorile în punctele critice și la capetele intervalului.", "type": "metoda" },
 
-                { "id": 901, "topic_id": 9, "front_text": "Formula $(a^m)(a^n)$?", "back_text": "$$a^{m+n}$$", "type": "formula" },
-                { "id": 902, "topic_id": 9, "front_text": "Formula $\\frac{a^m}{a^n}$?", "back_text": "$$a^{m-n}$$", "type": "formula" },
-                { "id": 903, "topic_id": 9, "front_text": "Formula $(a^m)^n$?", "back_text": "$$a^{mn}$$", "type": "formula" },
-                { "id": 904, "topic_id": 9, "front_text": "Formula $(ab)^n$?", "back_text": "$$a^nb^n$$", "type": "formula" },
-                { "id": 905, "topic_id": 9, "front_text": "Formula $(\\frac{a}{b})^n$?", "back_text": "$$\\frac{a^n}{b^n}$$", "type": "formula" },
+    { "id": 901, "topic_id": 9, "front_text": "Formula $(a^m)(a^n)$?", "back_text": "$$a^{m+n}$$", "type": "formula" },
+    { "id": 902, "topic_id": 9, "front_text": "Formula $\\frac{a^m}{a^n}$?", "back_text": "$$a^{m-n}$$", "type": "formula" },
+    { "id": 903, "topic_id": 9, "front_text": "Formula $(a^m)^n$?", "back_text": "$$a^{mn}$$", "type": "formula" },
+    { "id": 904, "topic_id": 9, "front_text": "Formula $(ab)^n$?", "back_text": "$$a^n b^n$$", "type": "formula" },
+    { "id": 905, "topic_id": 9, "front_text": "Formula $(\\frac{a}{b})^n$?", "back_text": "$$\\frac{a^n}{b^n}$$", "type": "formula" },
+    { "id": 906, "topic_id": 9, "front_text": "Ce este $a^0$ pentru $a\\neq 0$?", "back_text": "$$1$$", "type": "formula" },
+    { "id": 907, "topic_id": 9, "front_text": "Ce este $a^{-n}$?", "back_text": "$$\\frac{1}{a^n}$$", "type": "formula" },
+    { "id": 908, "topic_id": 9, "front_text": "Ce este $a^{1/n}$?", "back_text": "Rădăcina $n$-a din $a$: $$\\sqrt[n]{a}$$", "type": "formula" },
+    { "id": 909, "topic_id": 9, "front_text": "Cum se scrie $a^{m/n}$?", "back_text": "$$\\sqrt[n]{a^m}$$", "type": "formula" },
+    { "id": 910, "topic_id": 9, "front_text": "Ce valoare are $1^n$?", "back_text": "$$1$$", "type": "formula" },
+    { "id": 911, "topic_id": 9, "front_text": "Ce valoare are $0^n$ pentru $n>0$?", "back_text": "$$0$$", "type": "formula" },
+    { "id": 912, "topic_id": 9, "front_text": "Ce se întâmplă cu $a^n$ dacă $a>1$ și $n\\to \\infty$?", "back_text": "$$a^n \\to \\infty$$", "type": "teorema" },
+    { "id": 913, "topic_id": 9, "front_text": "Ce se întâmplă cu $a^n$ dacă $0<a<1$ și $n\\to \\infty$?", "back_text": "$$a^n \\to 0$$", "type": "teorema" },
+    { "id": 914, "topic_id": 9, "front_text": "Ce este $a^{1/2}$?", "back_text": "Rădăcina pătrată $\\sqrt{a}$.", "type": "definitie" },
+    { "id": 915, "topic_id": 9, "front_text": "Ce este $a^{1/3}$?", "back_text": "Rădăcina cubică $\\sqrt[3]{a}$.", "type": "definitie" },
+    { "id": 916, "topic_id": 9, "front_text": "Formula binomului lui Newton $(a+b)^2$?", "back_text": "$$a^2+2ab+b^2$$", "type": "formula" },
+    { "id": 917, "topic_id": 9, "front_text": "Formula $(a-b)^2$?", "back_text": "$$a^2-2ab+b^2$$", "type": "formula" },
+    { "id": 918, "topic_id": 9, "front_text": "Formula produsului $(a+b)(a-b)$?", "back_text": "$$a^2-b^2$$", "type": "formula" },
+    { "id": 919, "topic_id": 9, "front_text": "Formula $(x+y+z)^2$?", "back_text": "$$x^2+y^2+z^2+2xy+2xz+2yz$$", "type": "formula" },
+    { "id": 920, "topic_id": 9, "front_text": "Formula generală a binomului lui Newton?", "back_text": "$$(a+b)^n=\\sum_{k=0}^n \\binom{n}{k} a^{n-k}b^k$$", "type": "teorema" },
 
                 { "id": 1001, "topic_id": 10, "front_text": "Definiția combinărilor $C(n,k)$?", "back_text": "Numărul de submulțimi de $k$ elemente alese din $n$, fără ordine.", "type": "definitie" },
-                { "id": 1002, "topic_id": 10, "front_text": "Formula combinărilor?", "back_text": "$$C(n,k)=\\frac{n!}{k!(n-k)!}$$", "type": "formula" },
-                { "id": 1003, "topic_id": 10, "front_text": "Proprietatea simetrică?", "back_text": "$$C(n,k)=C(n,n-k)$$", "type": "teorema" },
-                { "id": 1004, "topic_id": 10, "front_text": "Relația lui Pascal?", "back_text": "$$C(n,k)=C(n-1,k-1)+C(n-1,k)$$", "type": "teorema" },
-                { "id": 1005, "topic_id": 10, "front_text": "Câte submulțimi are o mulțime cu $n$ elemente?", "back_text": "$$2^n$$", "type": "formula" },
-
-                { "id": 1101, "topic_id": 11, "front_text": "Definiția aranjamentelor $A(n,k)$?", "back_text": "Numărul de moduri de a ordona $k$ elemente alese din $n$.", "type": "definitie" },
-                { "id": 1102, "topic_id": 11, "front_text": "Formula aranjamentelor?", "back_text": "$$A(n,k)=\\frac{n!}{(n-k)!}$$", "type": "formula" },
-                { "id": 1103, "topic_id": 11, "front_text": "Formula permutărilor $P_n$?", "back_text": "$n!$", "type": "formula" },
-                { "id": 1104, "topic_id": 11, "front_text": "Câte permutări circulare are o mulțime cu $n$ elemente?", "back_text": "$(n-1)!$", "type": "formula" },
-                { "id": 1105, "topic_id": 11, "front_text": "Formula permutărilor cu repetiție pentru $n$ elemente împărțite în grupuri?", "back_text": "$$\\frac{n!}{n_1!n_2!...n_k!}$$", "type": "formula" }
+    { "id": 1002, "topic_id": 10, "front_text": "Formula combinărilor?", "back_text": "$$C(n,k)=\\frac{n!}{k!(n-k)!}$$", "type": "formula" },
+    { "id": 1003, "topic_id": 10, "front_text": "Proprietatea simetrică?", "back_text": "$$C(n,k)=C(n,n-k)$$", "type": "teorema" },
+    { "id": 1004, "topic_id": 10, "front_text": "Relația lui Pascal?", "back_text": "$$C(n,k)=C(n-1,k-1)+C(n-1,k)$$", "type": "teorema" },
+    { "id": 1005, "topic_id": 10, "front_text": "Câte submulțimi are o mulțime cu $n$ elemente?", "back_text": "$$2^n$$", "type": "formula" },
+    { "id": 1006, "topic_id": 10, "front_text": "Definiția aranjamentelor $A(n,k)$?", "back_text": "Numărul de moduri de a ordona $k$ elemente din $n$, cu ordine.", "type": "definitie" },
+    { "id": 1007, "topic_id": 10, "front_text": "Formula aranjamentelor?", "back_text": "$$A(n,k)=\\frac{n!}{(n-k)!}$$", "type": "formula" },
+    { "id": 1008, "topic_id": 10, "front_text": "Definiția permutărilor $P(n)$?", "back_text": "Numărul de moduri de a ordona toate cele $n$ elemente.", "type": "definitie" },
+    { "id": 1009, "topic_id": 10, "front_text": "Formula permutărilor?", "back_text": "$$P(n)=n!$$", "type": "formula" },
+    { "id": 1010, "topic_id": 10, "front_text": "Numărul de permutări cu repetiție a $n$ elemente din care $n_1, n_2, ...$ se repetă?", "back_text": "$$\\frac{n!}{n_1!n_2!...}$$", "type": "formula" },
+    { "id": 1011, "topic_id": 10, "front_text": "Formula aranjamentelor cu repetiție?", "back_text": "$$A_r(n,k)=n^k$$", "type": "formula" },
+    { "id": 1012, "topic_id": 10, "front_text": "Formula combinărilor cu repetiție?", "back_text": "$$C_r(n,k)=C(n+k-1,k)$$", "type": "formula" },
+    { "id": 1013, "topic_id": 10, "front_text": "Cât face suma tuturor combinărilor pentru $n$ fix?", "back_text": "$$\\sum_{k=0}^n C(n,k)=2^n$$", "type": "teorema" },
+    { "id": 1014, "topic_id": 10, "front_text": "Ce reprezintă coeficienții binomiali $C(n,k)$?", "back_text": "Coeficienții din dezvoltarea binomului lui Newton.", "type": "definitie" },
+    { "id": 1015, "topic_id": 10, "front_text": "Dezvoltarea binomului lui Newton $(a+b)^n$?", "back_text": "$$(a+b)^n=\\sum_{k=0}^n C(n,k)a^{n-k}b^k$$", "type": "teorema" },
+    { "id": 1016, "topic_id": 10, "front_text": "Câte moduri sunt de a alege 1 element din $n$?", "back_text": "$$C(n,1)=n$$", "type": "formula" },
+    { "id": 1017, "topic_id": 10, "front_text": "Câte moduri sunt de a alege toți cei $n$ elemente?", "back_text": "$$C(n,n)=1$$", "type": "formula" },
+    { "id": 1018, "topic_id": 10, "front_text": "Ce valoare are $C(n,0)$?", "back_text": "$$1$$", "type": "formula" },
+    { "id": 1019, "topic_id": 10, "front_text": "Care este valoarea lui $C(n,2)$?", "back_text": "$$\\frac{n(n-1)}{2}$$", "type": "formula" },
+    { "id": 1020, "topic_id": 10, "front_text": "Care este valoarea lui $C(n,3)$?", "back_text": "$$\\frac{n(n-1)(n-2)}{6}$$", "type": "formula" },
+              
+    { "id": 1101, "topic_id": 11, "front_text": "Definiția aranjamentelor $A(n,k)$?", "back_text": "Numărul de moduri de a ordona $k$ elemente alese din $n$.", "type": "definitie" },
+    { "id": 1102, "topic_id": 11, "front_text": "Formula aranjamentelor?", "back_text": "$$A(n,k)=\\frac{n!}{(n-k)!}$$", "type": "formula" },
+    { "id": 1103, "topic_id": 11, "front_text": "Formula permutărilor $P_n$?", "back_text": "$$n!$$", "type": "formula" },
+    { "id": 1104, "topic_id": 11, "front_text": "Câte permutări circulare are o mulțime cu $n$ elemente?", "back_text": "$$(n-1)!$$", "type": "formula" },
+    { "id": 1105, "topic_id": 11, "front_text": "Formula permutărilor cu repetiție pentru $n$ elemente împărțite în grupuri?", "back_text": "$$\\frac{n!}{n_1!n_2!...n_k!}$$", "type": "formula" },
+    { "id": 1106, "topic_id": 11, "front_text": "Ce reprezintă permutările?", "back_text": "Rearanjări posibile ale tuturor elementelor unei mulțimi.", "type": "definitie" },
+    { "id": 1107, "topic_id": 11, "front_text": "Aranjamentele cu repetiție $A_r(n,k)$?", "back_text": "$$n^k$$", "type": "formula" },
+    { "id": 1108, "topic_id": 11, "front_text": "Câte aranjamente sunt posibile când $k=1$?", "back_text": "$$A(n,1)=n$$", "type": "formula" },
+    { "id": 1109, "topic_id": 11, "front_text": "Câte aranjamente sunt posibile când $k=n$?", "back_text": "$$A(n,n)=n!$$", "type": "formula" },
+    { "id": 1110, "topic_id": 11, "front_text": "Ce este o permutare identică?", "back_text": "Permutarea care lasă toate elementele pe poziția inițială.", "type": "definitie" },
+    { "id": 1111, "topic_id": 11, "front_text": "Numărul de permutări de $n$ elemente distincte?", "back_text": "$$P(n)=n!$$", "type": "formula" },
+    { "id": 1112, "topic_id": 11, "front_text": "Formula permutărilor cu elemente identice?", "back_text": "$$\\frac{n!}{n_1!n_2!...n_r!}$$", "type": "formula" },
+    { "id": 1113, "topic_id": 11, "front_text": "Ce este o permutare circulară?", "back_text": "O aranjare a elementelor pe un cerc, unde rotațiile sunt considerate identice.", "type": "definitie" },
+    { "id": 1114, "topic_id": 11, "front_text": "Numărul de aranjamente circulare de $n$ elemente?", "back_text": "$$(n-1)!$$", "type": "formula" },
+    { "id": 1115, "topic_id": 11, "front_text": "Care este relația dintre aranjamente și permutări?", "back_text": "$$A(n,n)=P(n)$$", "type": "teorema" },
+    { "id": 1116, "topic_id": 11, "front_text": "Ce este factorialul $n!$?", "back_text": "Produsul numerelor de la 1 la $n$.", "type": "definitie" },
+    { "id": 1117, "topic_id": 11, "front_text": "Ce valoare are $0!$?", "back_text": "$$1$$", "type": "formula" },
+    { "id": 1118, "topic_id": 11, "front_text": "Formula aranjamentelor când $k=0$?", "back_text": "$$A(n,0)=1$$", "type": "formula" },
+    { "id": 1119, "topic_id": 11, "front_text": "Câte permutări diferite are cuvântul 'ANA'?", "back_text": "$$\\frac{3!}{2!}=3$$", "type": "formula" },
+    { "id": 1120, "topic_id": 11, "front_text": "Câte permutări diferite are cuvântul 'LEVEL'?", "back_text": "$$\\frac{5!}{2!2!}=30$$", "type": "formula" }
             ]
         };
 
