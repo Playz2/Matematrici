@@ -1,10 +1,93 @@
+
 <!DOCTYPE html>
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematrici</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Matematrici - Flashcards Interactive pentru Matematică | Derivate, Integrale, Limite</title>
+    <meta name="description" content="Învață matematica cu flashcards interactive. Practică derivate, integrale, limite, trigonometrie și multe altele. Platformă educațională gratuită pentru studenți.">
+    <meta name="keywords" content="matematica, flashcards, derivate, integrale, limite, trigonometrie, logaritmi, matrici, combinatorica, educatie">
+    <meta name="author" content="Matematrici">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://matematrici.vercel.app/">
+    <meta property="og:title" content="Matematrici - Flashcards Interactive pentru Matematică">
+    <meta property="og:description" content="Învață matematica cu flashcards interactive. Practică derivate, integrale, limite, trigonometrie și multe altele.">
+    <meta property="og:image" content="https://matematrici.vercel.app/og-image.png">
+    <meta property="og:locale" content="ro_RO">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://matematrici.vercel.app/">
+    <meta name="twitter:title" content="Matematrici - Flashcards Interactive pentru Matematică">
+    <meta name="twitter:description" content="Învață matematica cu flashcards interactive. Practică derivate, integrale, limite, trigonometrie și multe altele.">
+    <meta name="twitter:image" content="https://matematrici.vercel.app/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://matematrici.vercel.app/">
+    
+    <!-- Preconnect for external resources -->
+    <link rel="preconnect" href="https://polyfill.io">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Matematrici",
+      "description": "Platformă educațională cu flashcards interactive pentru învățarea matematicii",
+      "url": "https://matematrici.vercel.app/",
+      "sameAs": [],
+      "educationalCredentialAwarded": "Cunoștințe matematice",
+      "offers": {
+        "@type": "Course",
+        "name": "Flashcards Matematică",
+        "description": "Cursuri interactive de matematică cu flashcards",
+        "provider": {
+          "@type": "Organization",
+          "name": "Matematrici"
+        },
+        "courseMode": "online",
+        "educationalLevel": "high school, university",
+        "inLanguage": "ro",
+        "isAccessibleForFree": true,
+        "hasCourseInstance": [
+          {
+            "@type": "CourseInstance",
+            "name": "Derivate",
+            "description": "Învață regulile de derivare și aplicațiile lor"
+          },
+          {
+            "@type": "CourseInstance", 
+            "name": "Integrale",
+            "description": "Stăpânește tehnicile de integrare și aplicațiile lor"
+          },
+          {
+            "@type": "CourseInstance",
+            "name": "Limite",
+            "description": "Înțelege conceptul de limită și calculul limitelor"
+          }
+        ]
+      }
+    }
+    </script>
+    
+    <!-- MathJax Configuration -->
     <script>
 window.MathJax = {
             tex: {
@@ -100,104 +183,118 @@ window.MathJax = {
     </script>
 </head>
 <body>
-    <div id="loading-container" class="loading-container">
-        <div class="spinner"></div>
+    <!-- Loading Screen -->
+    <div id="loading-container" class="loading-container" role="status" aria-label="Se încarcă aplicația">
+        <div class="spinner" aria-hidden="true"></div>
         <div class="progress-container">
-            <div id="mathjax-loading-bar"></div>
+            <div id="mathjax-loading-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         <div class="loading-text" id="loading-text">Se incarca site-ul...</div>
         <div class="loading-subtitle">Matematricii te ajuta!</div>
     </div>
 
-    <!-- Main App -->
+    <!-- Main Application -->
     <div class="app-container" id="main-app" style="display: none;">
-        <div class="header">
+        <header class="header">
             <h1>📚 Mate Flashcards</h1>
             <p>Devine cel mai bun la mate cu acestea!</p>
-        </div>
+        </header>
 
-        <div id="topic-screen" class="content">
-            <div class="topic-grid">
-                <button class="topic-button" onclick="selectTopic('derivatives')">
-                    <span class="topic-icon">📐</span>
+        <main id="topic-screen" class="content">
+            <h2 class="sr-only">Selectează un subiect de matematică</h2>
+            <nav class="topic-grid" role="navigation" aria-label="Subiecte de matematică">
+                <button class="topic-button" onclick="selectTopic('derivatives')" aria-describedby="derivatives-desc">
+                    <span class="topic-icon" aria-hidden="true">📐</span>
                     <span>Derivate</span>
+                    <span id="derivatives-desc" class="sr-only">Învață regulile de derivare și aplicațiile lor</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('integrals')">
-                    <span class="topic-icon">∫</span>
+                <button class="topic-button" onclick="selectTopic('integrals')" aria-describedby="integrals-desc">
+                    <span class="topic-icon" aria-hidden="true">∫</span>
                     <span>Integrale</span>
+                    <span id="integrals-desc" class="sr-only">Stăpânește tehnicile de integrare</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('limits')">
-                    <span class="topic-icon">→</span>
+                <button class="topic-button" onclick="selectTopic('limits')" aria-describedby="limits-desc">
+                    <span class="topic-icon" aria-hidden="true">→</span>
                     <span>Limite</span>
+                    <span id="limits-desc" class="sr-only">Înțelege conceptul de limită</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('trigonometry')">
-                    <span class="topic-icon">📊</span>
+                <button class="topic-button" onclick="selectTopic('trigonometry')" aria-describedby="trig-desc">
+                    <span class="topic-icon" aria-hidden="true">📊</span>
                     <span>Trigonometrie</span>
+                    <span id="trig-desc" class="sr-only">Practică funcțiile trigonometrice</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('Logaritmi')">
-                    <span class="topic-icon">📊</span>
+                <button class="topic-button" onclick="selectTopic('Logaritmi')" aria-describedby="log-desc">
+                    <span class="topic-icon" aria-hidden="true">📊</span>
                     <span>Logaritmi</span>
+                    <span id="log-desc" class="sr-only">Învață proprietățile logaritmilor</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('Matrici')">
-                    <span class="topic-icon">📊</span>
+                <button class="topic-button" onclick="selectTopic('Matrici')" aria-describedby="matrices-desc">
+                    <span class="topic-icon" aria-hidden="true">📊</span>
                     <span>Matrici</span>
+                    <span id="matrices-desc" class="sr-only">Operații cu matrici și aplicații</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('Determinanti')">
-                    <span class="topic-icon">📊</span>
+                <button class="topic-button" onclick="selectTopic('Determinanti')" aria-describedby="det-desc">
+                    <span class="topic-icon" aria-hidden="true">📊</span>
                     <span>Determinanti</span>
+                    <span id="det-desc" class="sr-only">Calculul determinanților</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('Monotonie')">
-                    <span class="topic-icon">📊</span>
+                <button class="topic-button" onclick="selectTopic('Monotonie')" aria-describedby="mono-desc">
+                    <span class="topic-icon" aria-hidden="true">📊</span>
                     <span>Monotonie</span>
+                    <span id="mono-desc" class="sr-only">Studierea monotoniei funcțiilor</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('Puteri')">
-                    <span class="topic-icon">📊</span>
+                <button class="topic-button" onclick="selectTopic('Puteri')" aria-describedby="powers-desc">
+                    <span class="topic-icon" aria-hidden="true">📊</span>
                     <span>Puteri</span>
+                    <span id="powers-desc" class="sr-only">Operații cu puteri și radicali</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('Combinatorica')">
-                    <span class="topic-icon">📊</span>
+                <button class="topic-button" onclick="selectTopic('Combinatorica')" aria-describedby="comb-desc">
+                    <span class="topic-icon" aria-hidden="true">📊</span>
                     <span>Combinatorica</span>
+                    <span id="comb-desc" class="sr-only">Combinări și permutări</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('Aranjamente')">
-                    <span class="topic-icon">📊</span>
+                <button class="topic-button" onclick="selectTopic('Aranjamente')" aria-describedby="arr-desc">
+                    <span class="topic-icon" aria-hidden="true">📊</span>
                     <span>Aranjamente</span>
+                    <span id="arr-desc" class="sr-only">Calcul de aranjamente și aplicații</span>
                 </button>
-                <button class="topic-button" onclick="selectTopic('mixed')">
-                    <span class="topic-icon">🎲</span>
+                <button class="topic-button" onclick="selectTopic('mixed')" aria-describedby="mixed-desc">
+                    <span class="topic-icon" aria-hidden="true">🎲</span>
                     <span>Test Mixt</span>
+                    <span id="mixed-desc" class="sr-only">Exerciții din toate subiectele</span>
                 </button>
-            </div>
-        </div>
+            </nav>
+        </main>
 
-        <div id="flashcard-screen" class="content hidden">
+        <section id="flashcard-screen" class="content hidden">
             <div class="flashcard-container">
-                <div class="card-counter">
+                <div class="card-counter" role="status" aria-live="polite">
                     <span id="current-card">1</span> din <span id="total-cards">0</span>
                 </div>
                 
-                <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <div class="flashcard" id="flashcard" onclick="flipCard()" role="button" tabindex="0" aria-label="Flashcard - apasă pentru a întoarce" onkeypress="if(event.key==='Enter'||event.key===' ')flipCard()">
                     <div class="card-content" id="card-content"></div>
-                    <div class="tap-hint">Apasă pentru a întoarce</div>
+                    <div class="tap-hint" aria-hidden="true">Apasă pentru a întoarce</div>
                 </div>
                 
-                <div class="controls">
-                    <button class="btn btn-secondary" id="prev-btn" onclick="previousCard()">
+                <nav class="controls" role="navigation" aria-label="Navigare flashcards">
+                    <button class="btn btn-secondary" id="prev-btn" onclick="previousCard()" aria-label="Cardul anterior">
                         ← Anterior
                     </button>
-                    <button class="btn" id="next-btn" onclick="nextCard()">
+                    <button class="btn" id="next-btn" onclick="nextCard()" aria-label="Cardul următor">
                         Următorul →
                     </button>
-                </div>
+                </nav>
                 
-                <div class="controls">
-                    <button class="btn btn-secondary" onclick="backToTopics()">
+                <nav class="controls">
+                    <button class="btn btn-secondary" onclick="backToTopics()" aria-label="Înapoi la lista de subiecte">
                         ← Înapoi la Subiecte
                     </button>
-                </div>
+                </nav>
             </div>
-        </div>
+        </section>
     </div>
-</div>
+
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
